@@ -1,0 +1,24 @@
+{
+  "name": "nestjs-client-generator",
+  "version": "1.0.0",
+  "main": "index.ts",
+  "repository": "https://github.com/AlecMMiller/nestjs-client-generator.git",
+  "author": "Alec Miller <alecmichaelmiller@gmail.com>",
+  "license": "MIT",
+  "scripts": {
+    "build": "tsc",
+    "start": "node ./bin/app.js",
+    "dev": "ts-node ./src/app.ts",
+    "lint": "ts-standard",
+    "prepare": "husky install"
+  },
+  "dependencies": {
+    "@types/node": "^20.4.6",
+    "ts-standard": "^12.0.2",
+    "typescript": "^5.1.6"
+  },
+  "devDependencies": {
+    "husky": "^8.0.3",
+    "ts-node": "^10.9.1"
+  }
+}
