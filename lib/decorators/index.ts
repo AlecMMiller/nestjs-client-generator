@@ -1,1 +1,1 @@
-export * from './Broadcaster'
+export * from './Publisher'

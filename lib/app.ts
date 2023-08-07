@@ -1,4 +1,5 @@
 import { program } from 'commander'
+import { bootstrap } from './fakeBootstrap'
 
 program
   .option('--first')
@@ -6,5 +7,5 @@ program
 
 program.parse()
 
-const options = program.opts()
-console.log(options.first)
+const args = program.args
+void bootstrap(args[0])

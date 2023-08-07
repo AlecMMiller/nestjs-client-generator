@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common'
-import { ClientProxy } from '@nestjs/microservices'
 import { Feline } from './class'
+import { Publisher } from '../../decorators'
 
 const EventPatternsMS = {
   createFeline: 'ms/create/feline'
@@ -8,11 +8,8 @@ const EventPatternsMS = {
 
 @Injectable()
 export class FelinesBroadcaster {
-  constructor (
-    private readonly client: ClientProxy
-  ) {}
-
+  @Publisher()
   broadcastFeline (feline: Feline): void {
-    this.client.emit(EventPatternsMS.createFeline, feline)
+    console.log(EventPatternsMS.createFeline, feline)
   }
 }
