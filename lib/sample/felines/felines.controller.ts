@@ -3,7 +3,7 @@ import { CreateFelineDto } from './dto'
 import { FelinesService } from './felines.service'
 import { FelineRto } from './rto'
 
-@Controller()
+@Controller('test')
 export class FelinesController {
   constructor (
     private readonly felinesService: FelinesService
@@ -14,7 +14,7 @@ export class FelinesController {
     await this.felinesService.create(createFelineDto)
   }
 
-  @Get()
+  @Get('test2')
   async getCat (): Promise<FelineRto> {
     return await this.getCat()
   }

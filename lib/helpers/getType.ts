@@ -1,3 +1,5 @@
+import { PARAMTYPES_METADATA } from '@nestjs/common/constants'
+
 interface TypeInfo {
   name: string
 }
@@ -5,7 +7,7 @@ interface TypeInfo {
 type ParamTypes = TypeInfo[]
 
 export function getParamTypes (target: Object, propertyKey: string): ParamTypes {
-  return Reflect.getMetadata('design:paramtypes', target, propertyKey)
+  return Reflect.getMetadata(PARAMTYPES_METADATA, target, propertyKey)
 }
 
 export function getType (target: Object, propertyKey: string): TypeInfo {
