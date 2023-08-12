@@ -15,6 +15,6 @@ export function getRoutePath (target: Function): string {
 }
 
 export function buildPath (globalPrefix: string, classPath: string, routePath: string): string {
-  const paths = [globalPrefix, classPath, routePath].filter(path => path.trim() !== '')
+  const paths = [globalPrefix, classPath, routePath].filter(path => path.trim() !== '' && path.trim() !== '/')
   return paths.join('/')
 }

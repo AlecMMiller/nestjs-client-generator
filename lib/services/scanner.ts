@@ -5,7 +5,7 @@ import { stripLastSlash } from '@nestjs/swagger/dist/utils/strip-last-slash.util
 import { Module } from '@nestjs/core/injector/module'
 import { getClassPath } from '../helpers/restPath'
 import { getMethodNames } from '../helpers/getMethods'
-import { RestMethodAnalyzer } from '../helpers/restMethod'
+import { RestMethod, RestMethodAnalyzer } from '../helpers/restMethod'
 
 export class Scanner {
   private readonly app: INestApplicationContext
@@ -13,6 +13,7 @@ export class Scanner {
   private container?: NestContainer
   private globalPrefix?: string
   private modules?: Module[]
+  private readonly restRoutes: RestMethod[] = []
 
   constructor (app: INestApplicationContext, options: GeneratorOptions) {
     this.app = app
@@ -56,7 +57,7 @@ export class Scanner {
         methodNames.forEach((method) => {
           const analyzer = new RestMethodAnalyzer(controller, method, this.getGlobalPrefix(), modulePath)
           const model = analyzer.getRepresentation()
-          console.log(model)
+          this.restRoutes.push(model)
         })
       })
     })
