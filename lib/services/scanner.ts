@@ -65,5 +65,6 @@ export class Scanner {
 
   scan (): void {
     this.getRestRoutes()
+    console.log(this.restRoutes)
   }
 }

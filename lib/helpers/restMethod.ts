@@ -10,14 +10,26 @@ export interface RestMethod {
   path: string
   requestMethod: RequestMethod
   requestPayload: PayloadEntry[]
+  responses: RestResponse[]
+}
+
+export interface RestResponse {
+  status: number
+  description?: string
+  isArray: boolean
+  type?: DataType
+}
+
+export interface DataType {
+  name: string
+  format?: string
+  example?: string
+  instance?: object
 }
 
 interface PayloadEntry {
   name: string
-  type: string
-  format?: string
-  example?: string
-  instance?: object
+  type: DataType
 }
 
 export class RestMethodAnalyzer {
@@ -26,9 +38,9 @@ export class RestMethodAnalyzer {
   private requestMethod: RequestMethod
   private method: any
   private controllerInstance: any
-  private metatype: any
   private readonly accessor = new ModelPropertiesAccessor()
   private readonly payload: PayloadEntry[] = []
+  private readonly responses: RestResponse[] = []
 
   constructor (private readonly controller: InstanceWrapper<object>, private readonly methodName: string, globalPrefix: string, modulePath: string) {
     this.analyzeRequestMetadata()
@@ -43,19 +55,36 @@ export class RestMethodAnalyzer {
   }
 
   private analyzeRequestMetadata (): void {
-    this.metatype = this.controller.metatype
     this.controllerInstance = this.controller.instance
     this.method = this.controllerInstance[this.methodName]
     this.requestMethod = this.reflector.get(METHOD_METADATA, this.method)
   }
 
   private analyzeResponsePayload (): void {
-    const returnType = this.getMetadata('design:returntype')
+    const responses = Reflect.getMetadata(DECORATORS.API_RESPONSE, this.method) as Map<string, any>
+    if (responses === undefined) {
+      return
+    }
 
-    const responseProto = returnType.prototype
-    console.log(responseProto)
-    // console.log(typeof responseProto)
-    // console.log(Reflect.getOwnMetadataKeys(responseProto))
+    Object.entries(responses).forEach(([code, value]) => {
+      let type: undefined | DataType
+      if (typeof value.type === 'function') {
+        // eslint-disable-next-line new-cap
+        const instance = new value.type()
+        type = {
+          name: instance.constructor.name,
+          instance
+        }
+      }
+
+      const response: RestResponse = {
+        status: Number(code),
+        isArray: value.isArray === true,
+        description: value.description,
+        type
+      }
+      this.responses.push(response)
+    })
   }
 
   private analyzeRequestPayload (): void {
@@ -75,7 +104,8 @@ export class RestMethodAnalyzer {
     return {
       path: this.path,
       requestMethod: this.requestMethod,
-      requestPayload: this.payload
+      requestPayload: this.payload,
+      responses: this.responses
     }
   }
 
@@ -95,10 +125,12 @@ export class RestMethodAnalyzer {
 
     this.payload.push({
       name: property,
-      type: typeName,
-      format: meta.format,
-      example: meta.example,
-      instance: propertyInstance
+      type: {
+        name: typeName,
+        format: meta.format,
+        example: meta.example,
+        instance: propertyInstance
+      }
     })
   }
 }
