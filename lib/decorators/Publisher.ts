@@ -1,10 +1,9 @@
 import 'reflect-metadata'
 
-export function Publisher (): MethodDecorator {
-  console.log('Publisher')
+export const PUBLISHER_KEY = 'publisher'
+
+export function Publisher (topic: string): MethodDecorator {
   return (target: any, propertyKey: string | symbol) => {
-    console.log('propertyKey', propertyKey)
-    console.log('target', target)
-    Reflect.defineMetadata('publisher', true, target, propertyKey)
+    Reflect.defineMetadata(PUBLISHER_KEY, topic, target, propertyKey)
   }
 }

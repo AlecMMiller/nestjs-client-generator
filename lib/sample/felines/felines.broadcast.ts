@@ -8,7 +8,7 @@ const EventPatternsMS = {
 
 @Injectable()
 export class FelinesBroadcaster {
-  @Publisher()
+  @Publisher('ms/create/feline')
   broadcastFeline (feline: Feline): void {
     console.log(EventPatternsMS.createFeline, feline)
   }
