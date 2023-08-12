@@ -1,10 +1,11 @@
-import { INestApplicationContext, RequestMethod } from '@nestjs/common'
+import { INestApplicationContext } from '@nestjs/common'
 import { GeneratorOptions } from 'interfaces/options'
 import { NestContainer } from '@nestjs/core'
 import { stripLastSlash } from '@nestjs/swagger/dist/utils/strip-last-slash.util'
 import { Module } from '@nestjs/core/injector/module'
-import { getMethods } from '../helpers/getMethods'
-import { buildPath, getClassPath, getRoutePath } from '../helpers/restPath'
+import { getClassPath } from '../helpers/restPath'
+import { getMethodNames } from '../helpers/getMethods'
+import { RestMethodAnalyzer } from '../helpers/restMethod'
 
 export class Scanner {
   private readonly app: INestApplicationContext
@@ -51,12 +52,11 @@ export class Scanner {
     modules.forEach((module) => {
       module.controllers.forEach((controller) => {
         const modulePath = getClassPath(controller)
-        const methods = getMethods(controller)
-        methods.forEach((method) => {
-          const routePath = getRoutePath(method)
-          const fullPath = buildPath(this.getGlobalPrefix(), modulePath, routePath)
-          const requestMethod = Reflect.getOwnMetadata('method', method) as RequestMethod
-          console.log(fullPath, requestMethod)
+        const methodNames = getMethodNames(controller)
+        methodNames.forEach((method) => {
+          const analyzer = new RestMethodAnalyzer(controller, method, this.getGlobalPrefix(), modulePath)
+          const model = analyzer.getRepresentation()
+          console.log(model)
         })
       })
     })

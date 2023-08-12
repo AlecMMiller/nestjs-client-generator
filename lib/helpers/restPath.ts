@@ -1,14 +1,17 @@
 import { InstanceWrapper } from '@nestjs/core/injector/instance-wrapper'
 import { stripLastSlash } from '@nestjs/swagger/dist/utils/strip-last-slash.util'
 
-export function getClassPath (target: InstanceWrapper<object>): string {
-  const path = Reflect.getMetadata('path', target.metatype)
+function getPath (target: Object): string {
+  const path = Reflect.getMetadata('path', target)
   return stripLastSlash(path)
 }
 
+export function getClassPath (target: InstanceWrapper<object>): string {
+  return getPath(target.metatype)
+}
+
 export function getRoutePath (target: Function): string {
-  const path = Reflect.getMetadata('path', target)
-  return stripLastSlash(path)
+  return getPath(target)
 }
 
 export function buildPath (globalPrefix: string, classPath: string, routePath: string): string {
