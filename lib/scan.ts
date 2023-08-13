@@ -1,4 +1,5 @@
-import { ApplicationRepresentation, Scanner } from './services/scanner'
+import { ApplicationRepresentation } from 'interfaces'
+import { Scanner } from './services/scanner'
 import { Test } from '@nestjs/testing'
 
 export async function scan (path: string): Promise<ApplicationRepresentation> {

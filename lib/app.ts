@@ -8,10 +8,12 @@ program
 
 program.parse()
 
-async function generate (location: string): Promise<void> {
+async function generate (location: string, generatorFile: string): Promise<void> {
   const representation = await scan(location)
-  console.log(representation)
+
+  const { generator } = await import(generatorFile)
+  generator(representation)
 }
 
 const args = program.args
-void generate(args[0])
+void generate(args[0], args[1])

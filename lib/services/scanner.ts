@@ -5,24 +5,16 @@ import { stripLastSlash } from '@nestjs/swagger/dist/utils/strip-last-slash.util
 import { Module } from '@nestjs/core/injector/module'
 import { getClassPath } from '../helpers/rest/restPath'
 import { getMethodNames } from '../helpers/getMethods'
-import { DataType, RestMethod, RestMethodAnalyzer } from '../helpers/rest/restMethod'
+import { RestMethodAnalyzer } from '../helpers/rest/restMethod'
 import { InstanceWrapper } from '@nestjs/core/injector/instance-wrapper'
-import { PublisherAnalyzer, PublisherRepresentation } from '../helpers/publisherAnalyzer'
+import { PublisherAnalyzer } from '../helpers/publisherAnalyzer'
 import { DECORATORS } from '@nestjs/swagger/dist/constants'
 import { ModelPropertiesAccessor } from '@nestjs/swagger/dist/services/model-properties-accessor'
-import { PrimitiveSchema, analyzePrimitive } from '../helpers/primitive'
-export interface JsonField {
-  name: string
-  type: PrimitiveSchema | JsonSchema
-}
-
-type JsonSchema = JsonField[]
-
-export interface ApplicationRepresentation {
-  restRoutes: RestMethod[]
-  publishers: PublisherRepresentation[]
-  schema: Map<string, JsonSchema>
-}
+import { ApplicationRepresentation } from '../interfaces'
+import { RestMethod } from '../interfaces/output/rest'
+import { PublisherRepresentation } from 'interfaces/output/publisher'
+import { DataType, JsonSchema } from '../interfaces/output/types'
+import { analyzePrimitive } from '../helpers/primitive'
 
 export class Scanner {
   private readonly app: INestApplicationContext
