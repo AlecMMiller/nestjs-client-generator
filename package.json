@@ -1,6 +1,6 @@
 {
-  "name": "nestjs-client-generator",
-  "version": "1.0.0",
+  "name": "@alecmmiller/nestjs-client-generator",
+  "version": "0.0.1",
   "main": "index.ts",
   "repository": "https://github.com/AlecMMiller/nestjs-client-generator.git",
   "author": "Alec Miller <alecmichaelmiller@gmail.com>",
