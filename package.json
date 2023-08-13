@@ -1,14 +1,22 @@
 {
   "name": "@alecmmiller/nestjs-client-generator",
   "version": "0.0.1",
-  "main": "index.ts",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
   "repository": "https://github.com/AlecMMiller/nestjs-client-generator.git",
   "author": "Alec Miller <alecmichaelmiller@gmail.com>",
   "license": "MIT",
   "private": false,
+  "files": [
+    "dist/**",
+    "!dist/sample/**"
+  ],
+  "bin": {
+    "generate-library": "dist/app.js"
+  },
   "scripts": {
     "build": "rimraf dist && tsc -p tsconfig.build.json",
-    "start": "node ./dist/app.js ./sample/app.module",
+    "start": "npx generate-library ./sample/app.module",
     "dev": "ts-node ./src/generator.ts",
     "lint": "ts-standard",
     "prepare": "husky install",
