@@ -11,7 +11,8 @@
     "start": "node ./dist/app.js ./sample/app.module",
     "dev": "ts-node ./src/generator.ts",
     "lint": "ts-standard",
-    "prepare": "husky install"
+    "prepare": "husky install",
+    "semantic-release": "semantic-release --branches main"
   },
   "dependencies": {
     "@types/node": "^20.4.6",
