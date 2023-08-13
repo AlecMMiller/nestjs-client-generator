@@ -1,12 +1,7 @@
 import { InstanceWrapper } from '@nestjs/core/injector/instance-wrapper'
 import { PUBLISHER_KEY } from '../decorators'
 import { getParamTypes } from './getType'
-import { DataType } from './rest/restMethod'
-
-export interface PublisherRepresentation {
-  topicPattern: string
-  type: DataType
-}
+import { PublisherRepresentation } from '../interfaces/output/publisher'
 
 export class PublisherAnalyzer {
   private readonly topicPattern: string

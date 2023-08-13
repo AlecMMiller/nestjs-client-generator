@@ -1,23 +1,6 @@
-import { JsonField } from 'services/scanner'
+import { ApiProperties, JsonField, PrimitiveSchema, PrimitiveType } from '../interfaces/output/types'
 
-export enum PrimitiveType {
-  STRING = 'string',
-  NUMBER = 'number',
-  BOOLEAN = 'boolean',
-  DATE = 'date'
-}
-
-export interface ConfigOptions {
-  example?: string
-  isArray?: boolean
-  enum?: any[]
-}
-
-export interface PrimitiveSchema extends ConfigOptions {
-  type: PrimitiveType
-}
-
-export function analyzePrimitive (name: string, type: { name: string }, config: ConfigOptions): JsonField | undefined {
+export function analyzePrimitive (name: string, type: { name: string }, config: ApiProperties): JsonField | undefined {
   let resolvedName = type.name
 
   if (resolvedName === undefined) {
