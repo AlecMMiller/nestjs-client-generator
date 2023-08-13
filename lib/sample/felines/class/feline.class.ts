@@ -1,3 +1,5 @@
+import { ApiProperty } from '@nestjs/swagger'
+
 enum PawsEnum {
   left = 'left',
   right = 'right',
@@ -9,19 +11,29 @@ enum GendersEnum {
 }
 
 export abstract class Feline {
-  id: number
+  @ApiProperty()
+    id: number
 
-  name: string
+  @ApiProperty()
+    name: string
 
-  age: number
+  @ApiProperty()
+    age: number
 
-  gender: GendersEnum
+  @ApiProperty({ enum: GendersEnum })
+    gender: GendersEnum
 
-  dominantPaw: PawsEnum
+  @ApiProperty({ enum: PawsEnum })
+    dominantPaw: PawsEnum
 
-  tags: string[]
+  @ApiProperty({
+    isArray: true,
+    type: String
+  })
+    tags: string[]
 
-  birthDatetime: Date
+  @ApiProperty()
+    birthDatetime: Date
 
   constructor (initializer: Record<string, any>) {
     Object.assign(this, initializer)

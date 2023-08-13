@@ -34,63 +34,63 @@ interface PayloadEntry {
 
 export class RestMethodAnalyzer {
   private readonly reflector: Reflector = new Reflector()
-  private path: string
-  private requestMethod: RequestMethod
-  private method: any
+  private url: string
+  private requestMethodType: RequestMethod
+  private restHandler: any
   private controllerInstance: any
   private readonly accessor = new ModelPropertiesAccessor()
   private readonly payload: PayloadEntry[] = []
   private readonly responses: RestResponse[] = []
 
-  constructor (private readonly controller: InstanceWrapper<object>, private readonly methodName: string, globalPrefix: string, modulePath: string) {
+  constructor (private readonly controllerWrapper: InstanceWrapper<object>, private readonly methodName: string, globalPrefix: string, controllerPrefix: string) {
     this.analyzeRequestMetadata()
-    this.analyzePath(globalPrefix, modulePath)
-    this.analyzeRequestPayload()
+    this.analyzePath(globalPrefix, controllerPrefix)
+    this.analyzeRequestBody()
     this.analyzeResponsePayload()
   }
 
   private analyzePath (globalPrefix: string, modulePath: string): void {
-    const pathEnd = this.reflector.get(PATH_METADATA, this.method)
-    this.path = buildPath(globalPrefix, modulePath, pathEnd)
+    const urlEnd = this.getHandlerMetadata(PATH_METADATA)
+    this.url = buildPath(globalPrefix, modulePath, urlEnd)
   }
 
   private analyzeRequestMetadata (): void {
-    this.controllerInstance = this.controller.instance
-    this.method = this.controllerInstance[this.methodName]
-    this.requestMethod = this.reflector.get(METHOD_METADATA, this.method)
+    this.controllerInstance = this.controllerWrapper.instance
+    this.restHandler = this.controllerInstance[this.methodName]
+    this.requestMethodType = this.reflector.get(METHOD_METADATA, this.restHandler)
   }
 
   private analyzeResponsePayload (): void {
-    const responses = Reflect.getMetadata(DECORATORS.API_RESPONSE, this.method) as Map<string, any>
-    if (responses === undefined) {
+    const possibleResponses = Reflect.getMetadata(DECORATORS.API_RESPONSE, this.restHandler) as Map<string, any>
+    if (possibleResponses === undefined) {
       return
     }
 
-    Object.entries(responses).forEach(([code, value]) => {
+    Object.entries(possibleResponses).forEach(([responseCode, responseInfo]) => {
       let type: undefined | DataType
-      if (typeof value.type === 'function') {
+      if (typeof responseInfo.type === 'function') {
         // eslint-disable-next-line new-cap
-        const instance = new value.type()
+        const instanceOfResponseType = new responseInfo.type()
         type = {
-          name: instance.constructor.name,
-          instance
+          name: instanceOfResponseType.constructor.name,
+          instance: instanceOfResponseType
         }
       }
 
       const response: RestResponse = {
-        status: Number(code),
-        isArray: value.isArray === true,
-        description: value.description,
+        status: Number(responseCode),
+        isArray: responseInfo.isArray === true,
+        description: responseInfo.description,
         type
       }
       this.responses.push(response)
     })
   }
 
-  private analyzeRequestPayload (): void {
-    const paramTypes = this.getMetadata('design:paramtypes')
+  private analyzeRequestBody (): void {
+    const requestBodyTypes = this.getControllerMetadataAboutHandler('design:paramtypes')
 
-    paramTypes.forEach((paramType: any) => {
+    requestBodyTypes.forEach((paramType: any) => {
       const paramProto = paramType.prototype
       const meta = this.accessor.getModelProperties(paramProto)
 
@@ -100,21 +100,25 @@ export class RestMethodAnalyzer {
     })
   }
 
-  getRepresentation (): RestMethod {
+  getRestMethodRepresentation (): RestMethod {
     return {
-      path: this.path,
-      requestMethod: this.requestMethod,
+      path: this.url,
+      requestMethod: this.requestMethodType,
       requestPayload: this.payload,
       responses: this.responses
     }
   }
 
-  private getMetadata (key: string): any {
+  private getHandlerMetadata (key: string): string {
+    return this.reflector.get(key, this.restHandler)
+  }
+
+  private getControllerMetadataAboutHandler (key: string): any {
     return Reflect.getMetadata(key, this.controllerInstance, this.methodName)
   }
 
-  private analyzeRestProperty (proto: any, property: string): void {
-    const meta = Reflect.getMetadata(DECORATORS.API_MODEL_PROPERTIES, proto, property)
+  private analyzeRestProperty (parameterFieldPrototype: any, propertyName: string): void {
+    const meta = Reflect.getMetadata(DECORATORS.API_MODEL_PROPERTIES, parameterFieldPrototype, propertyName)
     const typeName = String(meta.type.name)
     let propertyInstance: undefined | object
 
@@ -124,7 +128,7 @@ export class RestMethodAnalyzer {
     }
 
     this.payload.push({
-      name: property,
+      name: propertyName,
       type: {
         name: typeName,
         format: meta.format,

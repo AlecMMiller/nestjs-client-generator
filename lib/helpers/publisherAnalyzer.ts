@@ -1,11 +1,11 @@
 import { InstanceWrapper } from '@nestjs/core/injector/instance-wrapper'
 import { PUBLISHER_KEY } from '../decorators'
 import { getParamTypes } from './getType'
+import { DataType } from './rest/restMethod'
 
 export interface PublisherRepresentation {
   topicPattern: string
-  payload: string
-  payloadInstance: object
+  type: DataType
 }
 
 export class PublisherAnalyzer {
@@ -29,8 +29,10 @@ export class PublisherAnalyzer {
     }
     return {
       topicPattern: this.topicPattern,
-      payload: this.payload,
-      payloadInstance: this.payloadInstance
+      type: {
+        name: this.payloadInstance.constructor.name,
+        instance: this.payloadInstance
+      }
     }
   }
 }
