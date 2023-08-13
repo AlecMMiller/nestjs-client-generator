@@ -1,5 +1,5 @@
 import { program } from 'commander'
-import { bootstrap } from './fakeBootstrap'
+import { scan } from './scan'
 
 program
   .option('--first')
@@ -7,5 +7,10 @@ program
 
 program.parse()
 
+async function generate (location: string): Promise<void> {
+  const representation = await scan(location)
+  console.log(representation)
+}
+
 const args = program.args
-void bootstrap(args[0])
+void generate(args[0])

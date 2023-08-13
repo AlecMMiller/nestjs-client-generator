@@ -11,11 +11,17 @@ import { PublisherAnalyzer, PublisherRepresentation } from '../helpers/publisher
 import { DECORATORS } from '@nestjs/swagger/dist/constants'
 import { ModelPropertiesAccessor } from '@nestjs/swagger/dist/services/model-properties-accessor'
 import { PrimitiveSchema, analyzePrimitive } from '../helpers/primitive'
+export interface JsonField {
+  name: string
+  type: PrimitiveSchema | JsonSchema
+}
 
-type ClassSchema = Array<ClassSchema | PrimitiveSchema>
+type JsonSchema = JsonField[]
+
 export interface ApplicationRepresentation {
   restRoutes: RestMethod[]
   publishers: PublisherRepresentation[]
+  schema: Map<string, JsonSchema>
 }
 
 export class Scanner {
@@ -26,7 +32,7 @@ export class Scanner {
   private modules?: Module[]
   private readonly restRoutes: RestMethod[] = []
   private readonly publishers: PublisherRepresentation[] = []
-  private readonly schemaMap: Map<string, ClassSchema> = new Map()
+  private readonly schemaMap: Map<string, JsonSchema> = new Map()
 
   constructor (app: INestApplicationContext, options: GeneratorOptions) {
     this.app = app
@@ -105,7 +111,7 @@ export class Scanner {
       return
     }
 
-    const schema: ClassSchema = []
+    const schema: JsonSchema = []
 
     const accessor = new ModelPropertiesAccessor()
     const properties = accessor.getModelProperties(instance as Type<unknown>)
@@ -115,30 +121,22 @@ export class Scanner {
       const primitive = analyzePrimitive(propertyName, type, config)
       if (primitive !== undefined) {
         schema.push(primitive)
-        return
-      }
-
-      const typeName = type.name
-
-      if (typeName === 'Array') {
-        console.log(type())
       }
     })
 
     this.schemaMap.set(name, schema)
-
-    // const apiModelProperties = Reflect.getMetadata(DECORATORS.API_MODEL_PROPERTIES_ARRAY, instance)
-
-    // apiModelProperties.forEach((property: any) => {
-    //   const meta = property.type
-    //   //console.log(property)
-    // })
   }
 
   private populateSchema (): void {
     this.restRoutes.forEach((route) => {
       route.requestPayload?.forEach((field) => {
         this.analyzeType(field.type)
+      })
+      route.responses.forEach((response) => {
+        if (response.type === undefined) {
+          return
+        }
+        this.analyzeType(response.type)
       })
     })
 
@@ -150,7 +148,8 @@ export class Scanner {
   getRepresentation (): ApplicationRepresentation {
     return {
       restRoutes: this.restRoutes,
-      publishers: this.publishers
+      publishers: this.publishers,
+      schema: this.schemaMap
     }
   }
 
@@ -158,6 +157,5 @@ export class Scanner {
     this.getRestRoutes()
     this.getBroadcasters()
     this.populateSchema()
-    console.log(this.schemaMap)
   }
 }

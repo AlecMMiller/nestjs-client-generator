@@ -1,3 +1,5 @@
+import { JsonField } from 'services/scanner'
+
 export enum PrimitiveType {
   STRING = 'string',
   NUMBER = 'number',
@@ -13,10 +15,9 @@ export interface ConfigOptions {
 
 export interface PrimitiveSchema extends ConfigOptions {
   type: PrimitiveType
-  name: string
 }
 
-export function analyzePrimitive (name: string, type: { name: string }, config: ConfigOptions): PrimitiveSchema | undefined {
+export function analyzePrimitive (name: string, type: { name: string }, config: ConfigOptions): JsonField | undefined {
   let resolvedName = type.name
 
   if (resolvedName === undefined) {
@@ -29,9 +30,13 @@ export function analyzePrimitive (name: string, type: { name: string }, config: 
     return undefined
   }
 
-  return {
-    name,
+  const primitive: PrimitiveSchema = {
     type: resolvedName as PrimitiveType,
     ...config
+  }
+
+  return {
+    name,
+    type: primitive
   }
 }
