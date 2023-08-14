@@ -1,6 +1,7 @@
 #! /usr/bin/env node
 import { program } from 'commander'
 import { scan } from './scan'
+import path from 'path'
 
 program
   .option('--first')
@@ -9,7 +10,12 @@ program
 program.parse()
 
 async function generate (location: string, generatorFile: string): Promise<void> {
-  const representation = await scan(location)
+  const baseDirectory = process.env.INIT_CWD
+  if (baseDirectory === undefined) {
+    throw Error('Could not find base directory')
+  }
+  const scannedLocation = path.join(baseDirectory, location)
+  const representation = await scan(scannedLocation)
 
   const { generator } = await import(generatorFile)
   generator(representation)
