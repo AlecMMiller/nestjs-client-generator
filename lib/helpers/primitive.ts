@@ -1,6 +1,7 @@
-import { ApiProperties, JsonField, PrimitiveSchema, PrimitiveType } from '../interfaces/output/types'
+import { ApiPropertyOptions } from '@nestjs/swagger'
+import { ObjectEntry, PrimitiveType } from '../interfaces/output/types'
 
-export function analyzePrimitive (name: string, type: { name: string }, config: ApiProperties): JsonField | undefined {
+export function analyzePrimitive (name: string, type: { name: string }, config: ApiPropertyOptions): ObjectEntry | undefined {
   let resolvedName = type.name
 
   if (resolvedName === undefined) {
@@ -13,13 +14,9 @@ export function analyzePrimitive (name: string, type: { name: string }, config: 
     return undefined
   }
 
-  const primitive: PrimitiveSchema = {
-    type: resolvedName as PrimitiveType,
-    ...config
-  }
-
   return {
-    name,
-    type: primitive
+    key: name,
+    valueType: resolvedName,
+    ...config
   }
 }

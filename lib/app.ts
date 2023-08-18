@@ -17,7 +17,8 @@ async function generate (location: string, generatorFile: string): Promise<void>
   const scannedLocation = path.join(baseDirectory, location)
   const representation = await scan(scannedLocation)
 
-  const { generator } = await import(generatorFile)
+  const generatorLocation = path.join(baseDirectory, 'node_modules', generatorFile)
+  const { generator } = await import(generatorLocation)
   generator(representation)
 }
 

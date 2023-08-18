@@ -16,7 +16,7 @@
   },
   "scripts": {
     "build": "rimraf dist && tsc -p tsconfig.build.json",
-    "start": "npx generate-library ./sample/app.module ./sample/generator",
+    "start": "npx generate-library ./dist/sample/app.module ./dist/sample/generator",
     "dev": "ts-node ./src/generator.ts",
     "lint": "ts-standard",
     "prepare": "husky install",

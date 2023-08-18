@@ -1,3 +1,5 @@
+import { ApiPropertyOptions } from '@nestjs/swagger'
+
 export enum PrimitiveType {
   STRING = 'string',
   NUMBER = 'number',
@@ -5,21 +7,11 @@ export enum PrimitiveType {
   DATE = 'date'
 }
 
-export type JsonSchema = JsonField[]
+export type ObjectEntries = ObjectEntry[]
 
-export interface JsonField {
-  name: string
-  type: PrimitiveSchema | JsonSchema
-}
-
-export interface PrimitiveSchema extends ApiProperties {
-  type: PrimitiveType
-}
-
-export interface ApiProperties {
-  example?: string
-  isArray?: boolean
-  enum?: any[]
+export interface ObjectEntry extends ApiPropertyOptions {
+  key: string
+  valueType: string
 }
 
 export interface DataType {

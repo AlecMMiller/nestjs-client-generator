@@ -13,9 +13,8 @@ import { ModelPropertiesAccessor } from '@nestjs/swagger/dist/services/model-pro
 import { ApplicationRepresentation } from '../interfaces'
 import { RestMethod } from '../interfaces/output/rest'
 import { PublisherRepresentation } from 'interfaces/output/publisher'
-import { DataType, JsonSchema } from '../interfaces/output/types'
+import { DataType, ObjectEntries } from '../interfaces/output/types'
 import { analyzePrimitive } from '../helpers/primitive'
-
 export class Scanner {
   private readonly app: INestApplicationContext
   private readonly options: GeneratorOptions
@@ -24,7 +23,7 @@ export class Scanner {
   private modules?: Module[]
   private readonly restRoutes: RestMethod[] = []
   private readonly publishers: PublisherRepresentation[] = []
-  private readonly schemaMap: Map<string, JsonSchema> = new Map()
+  private readonly schemaMap: Map<string, ObjectEntries> = new Map()
 
   constructor (app: INestApplicationContext, options: GeneratorOptions) {
     this.app = app
@@ -103,7 +102,7 @@ export class Scanner {
       return
     }
 
-    const schema: JsonSchema = []
+    const schema: ObjectEntries = []
 
     const accessor = new ModelPropertiesAccessor()
     const properties = accessor.getModelProperties(instance as Type<unknown>)
