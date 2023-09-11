@@ -5,25 +5,16 @@ import { stripLastSlash } from '@nestjs/swagger/dist/utils/strip-last-slash.util
 import { Module } from '@nestjs/core/injector/module'
 import { getClassPath } from '../helpers/rest/restPath'
 import { getMethodNames } from '../helpers/getMethods'
-import { DataType, RestMethod, RestMethodAnalyzer } from '../helpers/rest/restMethod'
+import { RestMethodAnalyzer } from '../helpers/rest/restMethod'
 import { InstanceWrapper } from '@nestjs/core/injector/instance-wrapper'
-import { PublisherAnalyzer, PublisherRepresentation } from '../helpers/publisherAnalyzer'
+import { PublisherAnalyzer } from '../helpers/publisherAnalyzer'
 import { DECORATORS } from '@nestjs/swagger/dist/constants'
 import { ModelPropertiesAccessor } from '@nestjs/swagger/dist/services/model-properties-accessor'
-import { PrimitiveSchema, analyzePrimitive } from '../helpers/primitive'
-export interface JsonField {
-  name: string
-  type: PrimitiveSchema | JsonSchema
-}
-
-type JsonSchema = JsonField[]
-
-export interface ApplicationRepresentation {
-  restRoutes: RestMethod[]
-  publishers: PublisherRepresentation[]
-  schema: Map<string, JsonSchema>
-}
-
+import { ApplicationRepresentation } from '../interfaces'
+import { RestMethod } from '../interfaces/output/rest'
+import { PublisherRepresentation } from 'interfaces/output/publisher'
+import { DataType, ObjectEntries, ObjectEntry } from '../interfaces/output/types'
+import { analyzePrimitive } from '../helpers/primitive'
 export class Scanner {
   private readonly app: INestApplicationContext
   private readonly options: GeneratorOptions
@@ -32,7 +23,7 @@ export class Scanner {
   private modules?: Module[]
   private readonly restRoutes: RestMethod[] = []
   private readonly publishers: PublisherRepresentation[] = []
-  private readonly schemaMap: Map<string, JsonSchema> = new Map()
+  private readonly schemaMap: Map<string, ObjectEntries> = new Map()
 
   constructor (app: INestApplicationContext, options: GeneratorOptions) {
     this.app = app
@@ -111,7 +102,7 @@ export class Scanner {
       return
     }
 
-    const schema: JsonSchema = []
+    const schema: ObjectEntries = []
 
     const accessor = new ModelPropertiesAccessor()
     const properties = accessor.getModelProperties(instance as Type<unknown>)
@@ -121,10 +112,26 @@ export class Scanner {
       const primitive = analyzePrimitive(propertyName, type, config)
       if (primitive !== undefined) {
         schema.push(primitive)
+      } else {
+        const subEntry: ObjectEntry = {
+          key: propertyName,
+          valueType: type.name,
+          ...config
+        }
+        schema.push(subEntry)
+        this.analyzeSubProperty(type)
       }
     })
 
     this.schemaMap.set(name, schema)
+  }
+
+  private analyzeSubProperty (Target: any): void {
+    const dataType: DataType = {
+      name: Target.name,
+      instance: new Target()
+    }
+    this.analyzeType(dataType)
   }
 
   private populateSchema (): void {

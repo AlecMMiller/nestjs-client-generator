@@ -5,32 +5,8 @@ import { ModelPropertiesAccessor } from '@nestjs/swagger/dist/services/model-pro
 import { DECORATORS } from '@nestjs/swagger/dist/constants'
 import { METHOD_METADATA, PATH_METADATA } from '@nestjs/common/constants'
 import { Reflector } from '@nestjs/core'
-
-export interface RestMethod {
-  path: string
-  requestMethod: RequestMethod
-  requestPayload: PayloadEntry[]
-  responses: RestResponse[]
-}
-
-export interface RestResponse {
-  status: number
-  description?: string
-  isArray: boolean
-  type?: DataType
-}
-
-export interface DataType {
-  name: string
-  format?: string
-  example?: string
-  instance?: object
-}
-
-interface PayloadEntry {
-  name: string
-  type: DataType
-}
+import { PayloadEntry, RestMethod, RestResponse } from '../../interfaces/output/rest'
+import { DataType } from '../../interfaces/output/types'
 
 export class RestMethodAnalyzer {
   private readonly reflector: Reflector = new Reflector()
