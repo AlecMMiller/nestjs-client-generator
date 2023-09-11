@@ -14,7 +14,15 @@ export function getRoutePath (target: Function): string {
   return getPath(target)
 }
 
+function shortenPath (path: string | undefined): string | null[] {
+  if (path === undefined) {
+    return []
+  }
+
+  return path
+}
+
 export function buildPath (globalPrefix: string, classPath: string, routePath: string): string {
-  const paths = [globalPrefix, classPath, routePath].filter(path => path.trim() !== '' && path.trim() !== '/')
+  const paths = [globalPrefix, classPath, routePath].flatMap(path => shortenPath(path))
   return paths.join('/')
 }
