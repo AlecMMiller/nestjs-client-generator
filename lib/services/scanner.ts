@@ -13,7 +13,7 @@ import { ModelPropertiesAccessor } from '@nestjs/swagger/dist/services/model-pro
 import { ApplicationRepresentation } from '../interfaces'
 import { RestMethod } from '../interfaces/output/rest'
 import { PublisherRepresentation } from 'interfaces/output/publisher'
-import { DataType, ObjectEntries } from '../interfaces/output/types'
+import { DataType, ObjectEntries, ObjectEntry } from '../interfaces/output/types'
 import { analyzePrimitive } from '../helpers/primitive'
 export class Scanner {
   private readonly app: INestApplicationContext
@@ -112,10 +112,26 @@ export class Scanner {
       const primitive = analyzePrimitive(propertyName, type, config)
       if (primitive !== undefined) {
         schema.push(primitive)
+      } else {
+        const subEntry: ObjectEntry = {
+          key: propertyName,
+          valueType: type.name,
+          ...config
+        }
+        schema.push(subEntry)
+        this.analyzeSubProperty(type)
       }
     })
 
     this.schemaMap.set(name, schema)
+  }
+
+  private analyzeSubProperty (Target: any): void {
+    const dataType: DataType = {
+      name: Target.name,
+      instance: new Target()
+    }
+    this.analyzeType(dataType)
   }
 
   private populateSchema (): void {
