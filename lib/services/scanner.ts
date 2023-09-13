@@ -77,6 +77,11 @@ export class Scanner {
     const modules = this.getModules()
     modules.forEach((module) => {
       module.providers.forEach((provider) => {
+        const providerName = provider.name as string
+        if (!providerName.includes('Publisher')) {
+          return
+        }
+
         const methods = getMethodNames(provider as InstanceWrapper<object>)
         methods.forEach((method) => {
           const analyzer = new PublisherAnalyzer(provider as InstanceWrapper<object>, method)
