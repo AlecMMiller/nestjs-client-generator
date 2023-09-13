@@ -9,6 +9,7 @@ export class PublisherAnalyzer {
   private readonly payloadType: string
   constructor (private readonly provider: InstanceWrapper<object>, private readonly methodName: string) {
     this.topicPattern = Reflect.getMetadata(PUBLISHER_KEY, this.provider.instance, this.methodName)
+
     if (this.topicPattern === undefined) {
       return
     }
@@ -17,8 +18,27 @@ export class PublisherAnalyzer {
 
     const PayloadArgs = getParamTypes(this.provider.instance, this.methodName)
 
-    const payloadFunction = PayloadArgs[payloadIndex] as any
-    this.payloadType = payloadFunction().constructor.name
+    const payloadInfo = Reflect.getMetadata('publisher-payload', this.provider.instance, this.methodName)[1]
+
+    let payloadFunction: any
+    if (payloadInfo.type !== undefined) {
+      payloadFunction = payloadInfo.type
+    } else {
+      payloadFunction = PayloadArgs[payloadIndex] as any
+    }
+
+    try {
+      this.payloadType = payloadFunction().constructor.name
+    } catch (error) {
+      const message = error.message as string
+      if (message.includes('Class constructor')) {
+        // eslint-disable-next-line new-cap
+        this.payloadInstance = new payloadFunction()
+        this.payloadType = this.payloadInstance.constructor.name
+      } else {
+        throw error
+      }
+    }
   }
 
   getRepresentation (): PublisherRepresentation | undefined {
