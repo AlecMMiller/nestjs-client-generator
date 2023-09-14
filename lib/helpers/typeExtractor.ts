@@ -7,8 +7,8 @@ import { Definitions, EnumInfo, ObjectInfo, PropertyInfo } from '../interfaces'
 type EnumValues = Array<string | number>
 
 export class TypeExtractor {
-  private readonly types: Map<String, ObjectInfo>
-  private readonly enums: Map<String, EnumInfo>
+  private readonly types: Map<string, ObjectInfo>
+  private readonly enums: Map<string, EnumInfo>
 
   constructor (initial: Constructor[]) {
     this.types = new Map()
