@@ -31,8 +31,8 @@ export interface ResponseSignature {
 }
 
 export interface Definitions {
-  objects: Map<String, ObjectInfo>
-  enums: Map<String, EnumInfo>
+  objects: Map<string, ObjectInfo>
+  enums: Map<string, EnumInfo>
 }
 
 export type ObjectInfo = PropertyInfo[]
