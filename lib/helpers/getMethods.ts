@@ -1,8 +1,6 @@
 import { MetadataScanner } from '@nestjs/core'
-import { InstanceWrapper } from '@nestjs/core/injector/instance-wrapper'
 
-export function getMethodNames (wrapper: InstanceWrapper<object>): string[] {
-  const instance = wrapper.instance
+export function getMethodNames (instance: Object): string[] {
   const scanner = new MetadataScanner()
   const methodNames = scanner.getAllMethodNames(instance)
   return methodNames
