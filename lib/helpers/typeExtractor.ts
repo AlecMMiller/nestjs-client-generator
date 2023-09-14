@@ -68,7 +68,7 @@ export class TypeExtractor {
       if (enumInfo !== undefined) {
         typeName = propertyName.split(/(?=[A-Z])/).join('_').toUpperCase()
         config.example = config.example.toUpperCase()
-        this.addEnum(propertyName, enumInfo)
+        this.addEnum(typeName, enumInfo)
       }
 
       if (typeName !== 'String' && typeName !== 'Number' && typeName !== 'Boolean' && typeName !== 'Date' && enumInfo === undefined) {
