@@ -66,7 +66,11 @@ export class TypeExtractor {
       const enumInfo: EnumValues | undefined = config.enum as EnumValues
 
       if (enumInfo !== undefined) {
-        typeName = propertyName.split(/(?=[A-Z])/).join('_').toUpperCase()
+        if (config.enumName !== undefined) {
+          typeName = config.enumName
+        } else {
+          typeName = propertyName.split(/(?=[A-Z])/).join('_').toUpperCase()
+        }
         config.example = config.example.toUpperCase()
         this.addEnum(typeName, enumInfo)
       }
