@@ -78,7 +78,7 @@ export class TypeExtractor {
       if (typeName !== 'String' && typeName !== 'Number' && typeName !== 'Boolean' && typeName !== 'Date' && enumInfo === undefined) {
         this.addType(Constructor)
       } else {
-        if (typeName !== 'Date') {
+        if (typeName !== 'Date' && enumInfo === undefined) {
           typeName = typeName.toLowerCase()
         }
       }
